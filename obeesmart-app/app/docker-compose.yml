@@ -1,0 +1,92 @@
+version: '3.2'
+services:
+  phppgadmin:
+    image: 'zhajor/docker-phppgadmin'
+    container_name: phppgadmin
+    depends_on:
+      - 'postgres'
+    links:
+      - postgres
+    external_links:
+      - 'postgres'
+    env_file:
+      - '.env'
+    ports:
+      - '3001:80'
+    networks:
+      - backend
+
+  postgres:
+    image: mdillon/postgis
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    env_file:
+      - '.env'
+    networks:
+      - backend
+    ports:
+      - "5432:5432"
+    container_name: postgres
+
+  redis:
+    image: 'redis:latest'
+    deploy:
+      replicas: 1
+    env_file:
+      - '.env'
+    networks:
+      - backend
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/root/redis
+    #environment:
+      #- REDIS_USER=PLOP
+      #- REDIS_PASSWORD=123456
+      #- REDIS_PORT=6379
+      #- REDIS_DATABASES=2
+    container_name: redis
+  
+  rebrow:
+    image: 'marian/rebrow'
+    ports:
+      - 5001:5001
+    links:
+      - redis
+    external_links:
+      - 'redis'
+    env_file:
+      - '.env'
+    networks:
+      - backend
+    container_name: rebrow
+
+  app:
+    #image: registry:443/ciconia-js:stable
+    container_name: obeesmart
+    restart: always
+    depends_on:
+      - 'postgres'
+      - 'redis'
+    links:
+      - redis
+      - postgres
+    external_links:
+      - 'redis'
+      - 'postgres'
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - '.:/app'
+    env_file:
+      - '.env'
+    deploy:
+      restart_policy:
+        condition: any
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: "bridge"

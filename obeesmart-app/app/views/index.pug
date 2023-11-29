@@ -1,0 +1,56 @@
+extends ../node_modules/pug-bootstrap/_bootstrap
+
+append styles
+	link(rel="stylesheet", href='../css/bootstrap-datepicker3.min.css')
+	link(rel="stylesheet", href='https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css')
+
+append scripts
+	script(src='https://code.jquery.com/jquery-1.11.3.min.js')
+	script(src='https://code.jquery.com/ui/1.11.3/jquery-ui.min.js')
+	script(src='../js/bootstrap-datepicker.min.js')
+	script(src='../locales/bootstrap-datepicker.fr.min.js')
+
+	
+	
+	script.
+		$(function () {
+			$('#date').each(function (index, dateElem) {
+				var $dateElem = $(dateElem);
+				//return JSON.stringify(dateElem);
+				var formatted = moment(dateElem, "YYYY-MM-DD HH:mm:ss").format('YYYY-MM-DD');
+				//dateElem.text(formatted);
+			})
+		});
+
+append body
+	
+	.container
+		include navbar.pug
+		.col-md-12
+			h4 Derniers commentaires
+			.table-responsive
+				table.table(class=type)
+					thead
+						tr
+							th Type
+							th Date
+							th Titre
+						
+					tbody
+						//each intervention in interventions
+							tr
+								td 
+									if intervention.type == 'outtage'
+										img(src="../images/incident.png",height="20", width="22", alt="outtage")
+									else
+										img(src="../images/sheduled.png",height="22", width="24", alt="scheduled") 
+
+								td(id="datedqsd")
+									= intervention.date
+								td
+									= intervention.title
+
+
+		
+			
+	include footer.pug

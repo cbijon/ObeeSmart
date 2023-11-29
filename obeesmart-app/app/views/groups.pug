@@ -1,0 +1,33 @@
+extends ../node_modules/pug-bootstrap/_bootstrap
+
+append body
+	.container
+		include navbar.pug
+		.col-md-4
+			h4 Creation groupe
+			form(action="/groups/create", method="post", class="well")
+				label(for="Nom du groupe")
+					| Nom du groupe
+				input(type="text", name="name", placeholder='', required='', autofocus='', class="form-control")
+				br
+				input(type="submit" class="btn btn-xs btn-success")
+		.col-md-8
+			h4 Groupes entreprise
+			.table-responsive
+					table.table.table-striped
+						thead
+							tr
+								th Noms
+								th Editer
+								th Supprimer
+						tbody
+						each group in groups
+							tr
+								td 
+									= group.name
+								td 
+									a(href="/groups/" + group.id + "/edit", class="btn btn-xs btn-warning") Editer
+								td 
+									a(href="/groups/" + group.id + "/destroy", class="btn btn-xs btn-danger") Supprimer
+		
+	include footer.pug

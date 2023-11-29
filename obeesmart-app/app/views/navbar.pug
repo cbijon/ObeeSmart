@@ -1,0 +1,13 @@
++navbar("ObeeSmart","dropdown_menu")
+  +nav_item("/dashboard") Home
+  +nav_item("/hives") Mes ruches
+  +nav_item("/alerts") Mes alertes
+  +nav_item("/stats") Mes statistiques
+  +nav_item("/contacts") Contacts
+    +nav_item_dropdown("#")(label="Mon compte")
+      +nav_item("/preferences") Préférences
+  if (is_admin == true)
+    +nav_item_dropdown("#")(label="Administration")
+      +nav_item("/users") Utilisateurs
+      +nav_item("/groups") Groupes
+  +nav_item("/logout") Logout

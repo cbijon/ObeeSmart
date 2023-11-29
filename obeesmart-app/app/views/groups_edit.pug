@@ -1,0 +1,16 @@
+extends ../node_modules/pug-bootstrap/_bootstrap
+
+append body
+	.container
+		include navbar.pug
+		.col-md-4
+			h4 Creation groupe
+			form(action="/groups/" + groups.id + "/update", method="post", class="well")
+				label(for="Nom du groupe")
+					| Nom du groupe
+				input(type="text", name="name", value=''+ groups.name +'', required='', autofocus='', class="form-control")
+				br
+				input(type="submit" class="btn btn-xs btn-success")
+
+		
+	include footer.pug

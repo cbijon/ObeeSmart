@@ -1,0 +1,10 @@
+.vscode
+.env*
+.eslint*
+.git*
+.sequel*
+docker-com*
+Dockerfile
+README
+./data/*
+node_modules

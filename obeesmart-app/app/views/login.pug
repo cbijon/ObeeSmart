@@ -1,0 +1,18 @@
+extends ../node_modules/pug-bootstrap/_bootstrap
+
+append styles
+	// Custom styles for this template
+	link(href='../css/signin.css', rel='stylesheet')
+block body
+	.container
+		form.form-signin(method='POST' action='/login')
+			h2.form-signin-heading Please sign in
+			label.sr-only(for='email') Email address
+			input#email.form-control(name='email', type='email', placeholder='Email address', required='', autofocus='')
+			label.sr-only(for='password') Password
+			input#password.form-control(name='password', type='password', placeholder='Password', required='')
+			.checkbox
+				label
+					input(type='checkbox', value='remember-me')
+					|  Remember me
+			button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign in
