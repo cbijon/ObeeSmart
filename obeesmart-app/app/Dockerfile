@@ -1,5 +1,4 @@
 FROM keymetrics/pm2:16-buster
- 
 #MAINTAINER bijon.charles@gmail.com
 
 # use changes to package.json to force Docker not to use the cache
@@ -31,4 +30,4 @@ EXPOSE 3000
 # Show current folder structure in logs
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD [ "pm2-runtime", "start", "ecosystem.config.js" ]
-#CMD [ "npm", "start" ]
+

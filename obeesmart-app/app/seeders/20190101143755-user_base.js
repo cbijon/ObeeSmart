@@ -4,7 +4,7 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     console.log('Adding user admin demo');
     return queryInterface.bulkInsert(
-      'users',
+      'User',
       [
         {
           id: 'b7ce9e2f-5d61-424f-983e-1dcc3f546459',

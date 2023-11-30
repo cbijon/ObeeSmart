@@ -1,8 +1,11 @@
 'use strict';
+const env = process.env.NODE_ENV || 'development';
 const { DataTypes } = require('sequelize');
+const config = require(__dirname + '/../config/config.js')[env];
+
 module.exports = sequelize => {
-  var groups = sequelize.define(
-    'groups',
+  const Group = sequelize.define(
+    'Group',
     {
       id: {
         type: DataTypes.UUID,
@@ -16,8 +19,9 @@ module.exports = sequelize => {
     }
   );
 
-  groups.associate = models => {
-    groups.hasMany(models.users, {foreignKey: 'group_id'});
+  Group.associate = models => {
+    Group.hasMany(models.User, { foreignKey: 'group_id' });
   };
-  return groups;
+
+  return Group;
 };

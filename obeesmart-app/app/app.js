@@ -11,12 +11,30 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const errorHandler = require('errorhandler');
 
+// Import des nouveaux contrôleurs
+const groupController = require("./controllers/groupController");
+const userController = require("./controllers/userController");
+const centraleHarpesController = require("./controllers/centraleHarpesController");
+const harpeController = require("./controllers/harpeController");
+const rucheController = require("./controllers/rucheController");
+const scaleController = require("./controllers/scaleController");
+const screenController = require("./controllers/screenController");
+const tokenController = require("./controllers/tokenController");
+
+
 
 // loading routes
 const routes = require('./routes/index');
-const users = require('./routes/users');
-const groups = require('./routes/groups');
-//const router = require('./routes');
+const user = require('./routes/user');
+const group = require('./routes/group');
+const centraleHarpes = require('./routes/centraleHarpes');
+const harpe = require('./routes/harpe');
+const ruche = require('./routes/ruche');
+const scale = require('./routes/scale');
+const screen = require('./routes/screen');
+const token = require('./routes/token');
+
+
 
 const app = express();
 
@@ -39,8 +57,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // routing
 app.use('/', routes);
-app.use('/users', users);
-app.use('/groups', groups);
+app.use('/group', group);
+app.use('/user', user);
+app.use('/centraleHarpes', centraleHarpes);
+app.use('/harpe', harpe);
+app.use('/ruche', ruche);
+app.use('/scale', scale);
+app.use('/screen', screen);
+app.use('/tokens', token);
 
 
 // error handling middleware should be loaded after the loading the routes

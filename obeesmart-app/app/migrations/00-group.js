@@ -2,7 +2,7 @@
 module.exports = {
   up: (sequelize, DataTypes) => {
     return sequelize.createTable(
-      'groups',
+      'Group',
       {
         id: {
           type: DataTypes.UUID,
@@ -23,6 +23,6 @@ module.exports = {
     );
   },
   down: (sequelize, DataTypes) => {
-    return sequelize.dropTable('groups');
+    return sequelize.dropTable('Group');
   },
 };

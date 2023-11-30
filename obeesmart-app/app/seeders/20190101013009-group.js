@@ -4,7 +4,7 @@ module.exports = {
   up: (queryInterface, sequelize) => {
     console.log('Adding group demo');
     return queryInterface.bulkInsert(
-      'groups',
+      'Group',
       [
         {
           id: '60eae00b-fa1d-4b4a-a981-f65c9c2c3b4f',

@@ -1,14 +1,12 @@
 'use strict';
-// var path = require('path');
-// var basename = path.basename(__filename);
-var env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV || 'development';
 const { DataTypes } = require('sequelize');
-var config = require(__dirname + '/../config/config.js')[env];
+const config = require(__dirname + '/../config/config.js')[env];
 
-var bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 module.exports = sequelize => {
-  var users = sequelize.define(
-    'users',
+  const user = sequelize.define(
+    'User',
     {
       id: {
         type: DataTypes.UUID,
@@ -31,27 +29,26 @@ module.exports = sequelize => {
       underscored: true,
     }
   );
-/*
-  users.associate = models => {
-    users.hasMany(models.observations, {foreignKey: 'users_id'});
-    users.hasMany(models.commentaires, {foreignKey: 'users_id'});
-    users.hasMany(models.sounds, {foreignKey: 'users_id'});
-    users.hasMany(models.birds, {foreignKey: 'users_id'});
-    users.hasMany(models.locations, {foreignKey: 'users_id'});
-    users.hasMany(models.photos, {foreignKey: 'users_id'});
+
+  user.associate = models => {
+    user.hasMany(models.CentraleHarpes, {foreignKey: 'user_id'});
+    user.hasMany(models.Harpe, {foreignKey: 'user_id'});
+    user.hasMany(models.Ruche, {foreignKey: 'user_id'});
+    user.hasMany(models.Screen, {foreignKey: 'user_id'});
+    user.hasMany(models.Scale, {foreignKey: 'user_id'});
   };
-*/
-  users.beforeUpdate(users => {
+
+  user.beforeUpdate(user => {
     const salt = bcrypt.genSaltSync();
-    users.password = bcrypt.hashSync(users.password, salt);
+    user.password = bcrypt.hashSync(user.password, salt);
   });
 
-  users.beforeCreate(users => {
+  user.beforeCreate(user => {
     const salt = bcrypt.genSaltSync();
-    users.password = bcrypt.hashSync(users.password, salt);
+    user.password = bcrypt.hashSync(user.password, salt);
   });
 
-  users.prototype.isEnable = function() {
+  user.prototype.isEnable = function() {
     if (this.role === 'enable') {
       return true;
     } else {
@@ -59,7 +56,7 @@ module.exports = sequelize => {
     }
   };
 
-  users.prototype.validPassword = function(password) {
+  user.prototype.validPassword = function(password) {
     if (config.ldap_enable) {
       console.log('LDAP Auth');
       return bcrypt.compareSync(password, this.password);
@@ -69,5 +66,5 @@ module.exports = sequelize => {
     }
   };
 
-  return users;
+  return user;
 };

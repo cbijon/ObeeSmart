@@ -1,0 +1,5 @@
+app/node_modules/
+app/data/
+app/.settings.js
+app/.env
+

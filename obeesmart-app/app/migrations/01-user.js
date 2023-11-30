@@ -3,7 +3,7 @@ module.exports = {
   up: (sequelize, DataTypes) => {
     return sequelize
       .createTable(
-        'users',
+        'User',
         {
           id: {
             type: DataTypes.UUID,
@@ -68,12 +68,12 @@ module.exports = {
       )
       .then(() => {
         return sequelize.addColumn(
-          'users', // name of Source model
+          'User', // name of Source model
           'group_id', // name of the key we're adding
           {
             type: DataTypes.UUID,
             references: {
-              model: 'groups', // name of Target model
+              model: 'Group', // name of Target model
               key: 'id', // key in Target model that we're referencing
             },
             onUpdate: 'CASCADE',
@@ -83,6 +83,6 @@ module.exports = {
       });
   },
   down: (sequelize, DataTypes) => {
-    return sequelize.dropTable('users');
+    return sequelize.dropTable('User');
   },
 };
