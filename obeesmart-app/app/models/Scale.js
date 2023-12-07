@@ -23,17 +23,17 @@ module.exports = sequelize => {
     
     Scale.associate = models => {
       
-      /*
+      
       Scale.belongsTo(models.User, {
         foreignKey: 'user_id',
         onDelete: 'CASCADE',
       });
       
-      Scale.belongsTo(models.Hive, {
-        foreignKey: 'hive_id',
+      Scale.belongsTo(models.Ruche, {
+        foreignKey: 'ruche_id',
         onDelete: 'CASCADE',
       });
-      */
+      
     };
     
     return Scale;

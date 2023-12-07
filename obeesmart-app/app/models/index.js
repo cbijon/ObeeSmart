@@ -11,15 +11,24 @@ var config = require(__dirname + '/../config/config.js')[env];
 var db = {};
 
 
-
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.DATABASE_URL], config);
+  sequelize = new Sequelize(process.env[config.DATABASE_URL], {
+    ...config,
+    define: {
+      freezeTableName: true,
+    },
+  });
 } else {
   sequelize = new Sequelize(
     config.database,
     config.username,
     config.password,
-    config
+    {
+      ...config,
+      define: {
+        freezeTableName: true,
+      },
+    }
   );
 }
 

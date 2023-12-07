@@ -24,19 +24,19 @@ module.exports = sequelize => {
   Ruche.associate = models => {
     Ruche.hasMany(models.Harpe, {foreignKey: 'Ruche_id'});
     Ruche.hasMany(models.Scale, {foreignKey: 'Ruche_id'});
-    /*
+    
     Ruche.belongsTo(models.User, {
       foreignKey: 'user_id',
       onDelete: 'CASCADE',
     });
-    */
+    
     // Si la ruche n'a pas de device_name et de dev_eui, attribuez-leur une valeur par défaut
-    Ruche.beforeCreate(ruche => {
-      if (!ruche.device_name) {
-        ruche.device_name = 'default_device_name';
+    Ruche.beforeCreate(Ruche => {
+      if (!Ruche.device_name) {
+        Ruche.device_name = 'default_device_name';
       }
-      if (!ruche.dev_eui) {
-        ruche.dev_eui = 'default_dev_eui';
+      if (!Ruche.dev_eui) {
+        Ruche.dev_eui = 'default_dev_eui';
       }
     });
   };

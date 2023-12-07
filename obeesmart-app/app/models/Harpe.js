@@ -22,19 +22,19 @@ module.exports = sequelize => {
   
     Harpe.associate = models => {
       
-      /*
+     
       Harpe.belongsTo(models.CentraleHarpes, {
         foreignKey: 'centrale_harpes_id',
         onDelete: 'CASCADE',
       });
-      */
+     
       // Si l'harpe n'est pas explicitement associée à un utilisateur, associez-la par défaut
-      Harpe.beforeCreate(async (harpe, options) => {
-        if (!harpe.user_id) {
+      Harpe.beforeCreate(async (Harpe, options) => {
+        if (!Harpe.user_id) {
           const defaultUser = await models.User.findOne({
             where: { /* conditions pour trouver l'utilisateur par défaut */ },
           });
-          harpe.user_id = defaultUser.id;
+          Harpe.user_id = defaultUser.id;
         }
       });
     };

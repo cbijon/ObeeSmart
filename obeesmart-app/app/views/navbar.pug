@@ -1,13 +1,19 @@
 +navbar("ObeeSmart","dropdown_menu")
   +nav_item("/dashboard") Home
-  +nav_item("/hives") Mes ruches
   +nav_item("/alerts") Mes alertes
   +nav_item("/stats") Mes statistiques
-  +nav_item("/contacts") Contacts
+    +nav_item_dropdown("/ruchier")(label="Mon ruchier")
+      +nav_item("/hives") Mes ruches
+      +nav_item("/scales") Mes balances
+      +nav_item("/centrales") Mes centrales
+      +nav_item("/harpes") Mes harpes
+      +nav_item("/screens") Mes écrans
     +nav_item_dropdown("#")(label="Mon compte")
       +nav_item("/preferences") Préférences
+      +nav_item("/password") Mot de passe
   if (is_admin == true)
     +nav_item_dropdown("#")(label="Administration")
       +nav_item("/users") Utilisateurs
       +nav_item("/groups") Groupes
+  +nav_item("/contacts") Contacts
   +nav_item("/logout") Logout

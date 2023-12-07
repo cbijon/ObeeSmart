@@ -5,17 +5,15 @@ const router = express.Router();
 
 // Associer les routes aux fonctions correspondantes dans le contrôleur
 
-router.get('/', userController.getAllUser);
-router.get('/:userId', userController.getUserById);
-router.post('/create', userController.createUser);
-router.put('/:userId/update', userController.updateUser);
-router.delete('/:userId/destroy', userController.deleteUser);
-
+router.get('/users', userController.getAllUser);
+router.get('/users/:userId', userController.getUserById);
+router.post('/users/create', userController.createUser);
+router.put('/users/:userId/update', userController.updateUser);
+router.delete('/users/:userId/destroy', userController.deleteUser);
 // Activer un utilisateur
-router.get('/:userId/enable', userController.enableUser);
-
+router.get('/users/:userId/enable', userController.enableUser);
 // Désactiver un utilisateur
-router.get('/:userId/disable', userController.disableUser);
-
+router.get('/users/:userId/disable', userController.disableUser);
+router.get("/logout", userController.logoutUser);
 
 module.exports = router;

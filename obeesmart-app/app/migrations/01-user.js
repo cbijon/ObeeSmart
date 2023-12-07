@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 module.exports = {
   up: (sequelize, DataTypes) => {
     return sequelize
       .createTable(
-        'User',
+        "User",
         {
           id: {
             type: DataTypes.UUID,
@@ -33,27 +33,19 @@ module.exports = {
             type: DataTypes.STRING,
             allowNull: false,
           },
-          manager_id: {
-            type: DataTypes.UUID,
-            allowNull: false,
-          },
-          is_manager: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false,
-          },
           is_admin: {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
           },
           role: {
             type: DataTypes.ENUM,
-            values: ['enable', 'disabled'],
-            defaultValue: 'disabled',
+            values: ["enable", "disabled"],
+            defaultValue: "disabled",
           },
           authtype: {
             type: DataTypes.ENUM,
-            values: ['local', 'ldap'],
-            defaultValue: 'local',
+            values: ["local", "ldap"],
+            defaultValue: "local",
           },
           contact_tel: {
             type: DataTypes.STRING,
@@ -68,21 +60,21 @@ module.exports = {
       )
       .then(() => {
         return sequelize.addColumn(
-          'User', // name of Source model
-          'group_id', // name of the key we're adding
+          "User", // name of Source model
+          "group_id", // name of the key we're adding
           {
             type: DataTypes.UUID,
             references: {
-              model: 'Group', // name of Target model
-              key: 'id', // key in Target model that we're referencing
+              model: "Group", // name of Target model
+              key: "id", // key in Target model that we're referencing
             },
-            onUpdate: 'CASCADE',
-            onDelete: 'SET NULL',
+            onUpdate: "CASCADE",
+            onDelete: "SET NULL",
           }
         );
       });
   },
   down: (sequelize, DataTypes) => {
-    return sequelize.dropTable('User');
+    return sequelize.dropTable("User");
   },
 };

@@ -25,7 +25,7 @@ module.exports = (sequelize) => {
     Screen.hasMany(models.Scale, { foreignKey: "Screen_id" });
     Screen.hasMany(models.Ruche, { foreignKey: "Screen_id" });
     
-    /*
+    
       Screen.belongsTo(models.User, {
         foreignKey: 'user_id',
         onDelete: 'CASCADE',
@@ -38,7 +38,7 @@ module.exports = (sequelize) => {
         foreignKey: 'screen_id',
         onDelete: 'CASCADE',
       });
-      */
+    
   };
 
   return Screen;

@@ -1,5 +1,19 @@
-// controllers/harpeController.js
+const express = require('express');
 const { Harpe } = require('../models');
+
+const router = express.Router();
+
+// Middleware de vérification de session
+const checkSession = (req, res, next) => {
+  if (req.session.user && req.cookies.user_sid) {
+    next(); // Si la session existe, continuez
+  } else {
+    res.redirect('/login'); // Sinon, redirigez vers la page de connexion
+  }
+};
+
+// Appliquer le middleware à toutes les routes
+router.use(checkSession);
 
 const getAllHarpes = async (req, res) => {
   try {
@@ -70,10 +84,4 @@ const deleteHarpe = async (req, res) => {
   }
 };
 
-module.exports = {
-  getAllHarpes,
-  getHarpeById,
-  createHarpe,
-  updateHarpe,
-  deleteHarpe,
-};
+module.exports = router;

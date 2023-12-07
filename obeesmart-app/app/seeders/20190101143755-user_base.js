@@ -15,8 +15,6 @@ module.exports = {
           email: 'bijon.charles@gmail.com',
           password:
             '$2b$10$NVS.6nv1vmf7JCCcef.0h.DH1FM5UTA41yLwkI2XpFEXShiE3R5um',
-          manager_id: 'b7ce9e2f-5d61-424f-983e-1dcc3f546459',
-          is_manager: true,
           is_admin: true,
           role: 'enable',
           authtype: 'local',

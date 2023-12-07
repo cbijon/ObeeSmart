@@ -23,19 +23,19 @@ module.exports = sequelize => {
 
   CentraleHarpes.associate = models => {
     CentraleHarpes.hasMany(models.Harpe, {foreignKey: 'CentraleHarpes_id'});
-    /**
+    
     CentraleHarpes.belongsTo(models.User, {
       foreignKey: 'user_id',
       onDelete: 'CASCADE',
     });
-     */
+    
     // Si la centraleHarpes n'a pas de device_name et de dev_eui, attribuez-leur une valeur par défaut
-    CentraleHarpes.beforeCreate(centraleHarpes => {
-      if (!centraleHarpes.device_name) {
-        centraleHarpes.device_name = 'default_device_name';
+    CentraleHarpes.beforeCreate(CentraleHarpes => {
+      if (!CentraleHarpes.device_name) {
+        CentraleHarpes.device_name = 'default_device_name';
       }
-      if (!centraleHarpes.dev_eui) {
-        centraleHarpes.dev_eui = 'default_dev_eui';
+      if (!CentraleHarpes.dev_eui) {
+        CentraleHarpes.dev_eui = 'default_dev_eui';
       }
     });
   };

@@ -1,7 +1,22 @@
-// controllers/screenController.js
-const { Screen } = require('../models');
+const express = require('express');
+const { Screen } = require('../models'); // Ajustez le chemin si nécessaire
 
-const getAllScreens = async (req, res) => {
+const router = express.Router();
+
+// Middleware de vérification de session
+const checkSession = (req, res, next) => {
+  if (req.session.user && req.cookies.user_sid) {
+    next(); // Si la session existe, continuez
+  } else {
+    res.redirect('/login'); // Sinon, redirigez vers la page de connexion
+  }
+};
+
+// Appliquer le middleware à toutes les routes
+router.use(checkSession);
+
+// Obtenir tous les écrans
+router.get('/', async (req, res) => {
   try {
     const screens = await Screen.findAll();
     res.json(screens);
@@ -9,9 +24,10 @@ const getAllScreens = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-};
+});
 
-const getScreenById = async (req, res) => {
+// Obtenir un écran par ID
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const screen = await Screen.findByPk(id);
@@ -24,9 +40,10 @@ const getScreenById = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-};
+});
 
-const createScreen = async (req, res) => {
+// Créer un nouvel écran
+router.post('/', async (req, res) => {
   const { /* extract required fields from request body */ } = req.body;
   try {
     const newScreen = await Screen.create({ /* assign values to model attributes */ });
@@ -35,11 +52,11 @@ const createScreen = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-};
+});
 
-const updateScreen = async (req, res) => {
+// Mettre à jour un écran
+router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { /* extract fields to update from request body */ } = req.body;
   try {
     const screen = await Screen.findByPk(id);
     if (screen) {
@@ -52,9 +69,10 @@ const updateScreen = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-};
+});
 
-const deleteScreen = async (req, res) => {
+// Supprimer un écran
+router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const screen = await Screen.findByPk(id);
@@ -68,12 +86,7 @@ const deleteScreen = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-};
+});
 
-module.exports = {
-  getAllScreens,
-  getScreenById,
-  createScreen,
-  updateScreen,
-  deleteScreen,
-};
+// Export du routeur
+module.exports = router;

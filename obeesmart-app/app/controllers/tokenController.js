@@ -1,7 +1,14 @@
-// controllers/tokenController.js
-'use strict';
 const Models = require('../models');
 const { v4: uuidv4 } = require('uuid');
+
+// Middleware de vérification de session
+const checkSession = (req, res, next) => {
+  if (req.session.user && req.cookies.user_sid) {
+    next(); // Si la session existe, continuez
+  } else {
+    res.redirect('/login'); // Sinon, redirigez vers la page de connexion
+  }
+};
 
 exports.generateToken = async (req, res) => {
   try {
@@ -55,3 +62,6 @@ exports.deleteToken = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+// Export du middleware pour être utilisé dans d'autres fichiers de route
+exports.checkSession = checkSession;
