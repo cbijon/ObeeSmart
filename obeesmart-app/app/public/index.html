@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ObeeSmart</title>
+    <link rel="stylesheet" href="css/static.css" />  
+  </head>
+
+  <body>
+    <header>
+      <div class="counter-container">
+        <div class="counter">
+          Frelons tués à ce jour :
+          <span id="hornetCounter" class="counter-number">0</span>
+        </div>
+      </div>
+    </header>
+
+    <nav>
+      <a href="/index.html">Accueil</a>
+      <a href="/products.html">Produits</a>
+      <a href="/contacts.html">Contacts</a>
+      <a href="/login">Login</a>
+    </nav>
+
+    <div class="summary">
+      <h2>Bienvenue sur ObeeSmart</h2>
+      <p>
+        Nous aidons les apiculteurs à surveiller de près leurs abeilles avec des
+        équipements intelligents.
+      </p>
+      <img src="images/intro.png" alt="intro" class="intro" />
+    </div>
+
+    <div class="additional-info-container">
+      <div class="additional-info">
+        <div class="column">
+          <h3>Service Client</h3>
+          <p>
+            Notre équipe du service client est là pour répondre à vos questions
+            et vous aider dans l'utilisation de nos produits.
+          </p>
+        </div>
+        <div class="column">
+          <h3>Nous Trouver</h3>
+          <p>
+            Retrouvez-nous à notre adresse à Paris. Nous serions ravis de vous
+            accueillir dans nos locaux.
+          </p>
+        </div>
+        <div class="column">
+          <h3>Restez Connecté</h3>
+          <p>
+            Suivez-nous sur les réseaux sociaux pour les dernières mises à jour,
+            conseils apicoles et plus encore.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Copyright ObeeSmart@2023
+      <img src="images/french-flag.png" alt="French Flag" class="french-flag" />
+    </footer>
+
+    <script>
+      // Utilisation de fetch pour récupérer le JSON depuis l'URL
+      fetch("/data/totalfrelons")
+        .then((response) => response.json())
+        .then((data) => {
+          // Exemple de structure JSON : {"total":[{"FraggedHornet":252}]}
+          const fraggedHornetCount = data.total[0].FraggedHornet;
+
+          // Mise à jour du compteur
+          document.getElementById("hornetCounter").innerText =
+            fraggedHornetCount;
+        })
+        .catch((error) =>
+          console.error(
+            "Erreur lors de la récupération des données JSON:",
+            error
+          )
+        );
+    </script>
+  </body>
+</html>

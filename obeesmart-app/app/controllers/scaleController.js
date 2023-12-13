@@ -1,19 +1,12 @@
 const express = require('express');
+const { validationResult } = require('express-validator');
 const { Scale } = require('../models'); // Ajustez le chemin si nécessaire
+const verifyToken = require('../middleware/verifyToken'); // Add this line for token verification
 
 const router = express.Router();
 
-// Middleware de vérification de session
-const checkSession = (req, res, next) => {
-  if (req.session.user && req.cookies.user_sid) {
-    next(); // Si la session existe, continuez
-  } else {
-    res.redirect('/login'); // Sinon, redirigez vers la page de connexion
-  }
-};
-
-// Appliquer le middleware à toutes les routes
-router.use(checkSession);
+// Middleware de vérification du token
+router.use(verifyToken);
 
 // Obtenir toutes les échelles
 router.get('/', async (req, res) => {

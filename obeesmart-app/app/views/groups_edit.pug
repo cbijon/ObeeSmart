@@ -1,14 +1,32 @@
 extends ../node_modules/pug-bootstrap/_bootstrap
 
+
+append styles
+	link(rel="stylesheet", href='../css/bootstrap-datepicker3.min.css')
+	link(rel="stylesheet", href='https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css')
+	//link(rel="stylesheet", href='https://code.highcharts.com/css/highcharts.css')
+	//link(rel="stylesheet", href='https://code.highcharts.com/dashboards/css/dashboards.css')
+	link(rel="stylesheet", href='../css/styles2.css')
+
+append scripts
+	script(src='https://code.jquery.com/jquery-1.11.3.min.js')
+	script(src='https://code.jquery.com/ui/1.11.3/jquery-ui.min.js')
+	script(src='../js/bootstrap-datepicker.min.js')
+	script(src='../locales/bootstrap-datepicker.fr.min.js')
+	script(src="https://code.highcharts.com/dashboards/dashboards.js")
+	//script(src="https://code.highcharts.com/highcharts.js")
+	//script(src="https://code.highcharts.com/dashboards/modules/dashboards-plugin.js")
+
 append body
 	.container
+		img(src="../images/bannierenoirenetwork.png", alt="Header Image", class="img-fluid")
 		include navbar.pug
 		.col-md-4
 			h4 Creation groupe
-			form(action="/groups/" + groups.id + "/update", method="post", class="well")
+			form(action="/groups/" + group.id + "/update", method="post", class="well")
 				label(for="Nom du groupe")
 					| Nom du groupe
-				input(type="text", name="name", value=''+ groups.name +'', required='', autofocus='', class="form-control")
+				input(type="text", name="name", value=''+ group.name +'', required='', autofocus='', class="form-control")
 				br
 				input(type="submit" class="btn btn-xs btn-success")
 

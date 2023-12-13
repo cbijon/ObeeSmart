@@ -34,6 +34,7 @@ module.exports = sequelize => {
     User.hasMany(models.Ruche, {foreignKey: 'user_id'});
     User.hasMany(models.Screen, {foreignKey: 'user_id'});
     User.hasMany(models.Scale, {foreignKey: 'user_id'});
+    User.hasMany(models.Log, {foreignKey: 'user_id'});
   };
 
   User.beforeUpdate(User => {

@@ -12,8 +12,7 @@ module.exports = sequelize => {
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
       },
-      device_name: DataTypes.STRING,
-      dev_eui: DataTypes.STRING,
+      name: DataTypes.STRING,
       // Ajoutez d'autres attributs de la ruche selon vos besoins
     },
     {
@@ -27,6 +26,11 @@ module.exports = sequelize => {
     
     Ruche.belongsTo(models.User, {
       foreignKey: 'user_id',
+      onDelete: 'CASCADE',
+    });
+
+    Ruche.belongsTo(models.Ruchier, {
+      foreignKey: 'id',
       onDelete: 'CASCADE',
     });
     

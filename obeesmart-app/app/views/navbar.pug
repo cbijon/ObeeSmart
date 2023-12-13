@@ -1,8 +1,9 @@
-+navbar("ObeeSmart","dropdown_menu")
++navbar("","dropdown_menu")
   +nav_item("/dashboard") Home
   +nav_item("/alerts") Mes alertes
   +nav_item("/stats") Mes statistiques
-    +nav_item_dropdown("/ruchier")(label="Mon ruchier")
+    +nav_item_dropdown("#")(label="Exploitation")
+      +nav_item("/ruchiers") Mes ruchiers
       +nav_item("/hives") Mes ruches
       +nav_item("/scales") Mes balances
       +nav_item("/centrales") Mes centrales
@@ -15,5 +16,6 @@
     +nav_item_dropdown("#")(label="Administration")
       +nav_item("/users") Utilisateurs
       +nav_item("/groups") Groupes
-  +nav_item("/contacts") Contacts
+      +nav_item("/logs") Logs
+  +nav_item("/index.html") Site
   +nav_item("/logout") Logout

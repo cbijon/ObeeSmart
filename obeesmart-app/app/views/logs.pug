@@ -1,0 +1,66 @@
+extends ../node_modules/pug-bootstrap/_bootstrap
+
+
+append styles
+	link(rel="stylesheet", href='../css/bootstrap-datepicker3.min.css')
+	link(rel="stylesheet", href='https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css')
+	//link(rel="stylesheet", href='https://code.highcharts.com/css/highcharts.css')
+	//link(rel="stylesheet", href='https://code.highcharts.com/dashboards/css/dashboards.css')
+	link(rel="stylesheet", href='../css/styles2.css')
+
+append scripts
+	script(src='https://code.jquery.com/jquery-1.11.3.min.js')
+	script(src='https://code.jquery.com/ui/1.11.3/jquery-ui.min.js')
+	script(src='../js/bootstrap-datepicker.min.js')
+	script(src='../locales/bootstrap-datepicker.fr.min.js')
+	script(src="https://code.highcharts.com/dashboards/dashboards.js")
+	//script(src="https://code.highcharts.com/highcharts.js")
+	//script(src="https://code.highcharts.com/dashboards/modules/dashboards-plugin.js")
+
+	script.
+		$(function () {
+			$('#date').each(function (index, dateElem) {
+				var $dateElem = $(dateElem);
+				var formatted = moment(dateElem, "YYYY-MM-DD HH:mm:ss").format('YYYY-MM-DD');
+			})
+
+			// Handle form submission
+			$('#userFilterForm').submit(function (event) {
+				event.preventDefault();
+				var selectedUser = $('#userFilter').val();
+				// Use selectedUser to filter logs
+				console.log('Selected User:', selectedUser);
+				// Implement your filtering logic here
+			});
+		});
+
+append body
+	.container
+		img(src="../images/bannierenoirenetwork.png", alt="Header Image", class="img-fluid")
+		include navbar.pug
+		.col-md-12
+			h4 Logs List
+
+			// Add form for user filtering
+			form(id="userFilterForm")
+				label(for="userFilter") Filter by User:
+				select#userFilter(name="user_id")
+					each user in users
+						option(value=user.id)= user.login
+
+			.table-responsive
+				table.table
+					thead
+						tr
+							th Timestamp
+							th User ID
+							th User Login
+							th Action
+					tbody
+						each log in logs
+							tr
+								td= log.created_at
+								td= log.user_id
+								td= log.User ? log.User.login : 'Unknown User'
+								td= log.action
+	include footer.pug

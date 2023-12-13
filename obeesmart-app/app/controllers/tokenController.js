@@ -1,67 +1,54 @@
-const Models = require('../models');
+const express = require('express');
 const { v4: uuidv4 } = require('uuid');
+const Models = require('../models');
+const asyncHandler = require('express-async-handler');
+const verifyToken = require('../middleware/verifyToken'); // Add this line for token verification
 
-// Middleware de vérification de session
-const checkSession = (req, res, next) => {
-  if (req.session.user && req.cookies.user_sid) {
-    next(); // Si la session existe, continuez
+const router = express.Router();
+
+// Middleware de vérification du token
+router.use(verifyToken);
+
+// Générer un nouveau token
+router.post('/generate', asyncHandler(async (req, res) => {
+  const { userId, expiresIn } = req.body;
+  const token = uuidv4();
+  const expires = expiresIn ? new Date(Date.now() + expiresIn * 1000) : null;
+
+  const createdToken = await Models.Token.create({
+    token,
+    userId,
+    expires,
+  });
+
+  res.json({ token: createdToken.token });
+}));
+
+// Valider un token
+router.get('/validate/:token', asyncHandler(async (req, res) => {
+  const { token } = req.params;
+
+  const foundToken = await Models.Token.findOne({
+    where: { token },
+  });
+
+  if (foundToken && (!foundToken.expires || foundToken.expires > new Date())) {
+    res.json({ valid: true });
   } else {
-    res.redirect('/login'); // Sinon, redirigez vers la page de connexion
+    res.json({ valid: false });
   }
-};
+}));
 
-exports.generateToken = async (req, res) => {
-  try {
-    const { userId, expiresIn } = req.body;
-    const token = uuidv4();
-    const expires = expiresIn ? new Date(Date.now() + expiresIn * 1000) : null;
+// Supprimer un token
+router.delete('/delete/:token', asyncHandler(async (req, res) => {
+  const { token } = req.params;
 
-    const createdToken = await Models.Token.create({
-      token,
-      userId,
-      expires,
-    });
+  await Models.Token.destroy({
+    where: { token },
+  });
 
-    res.json({ token: createdToken.token });
-  } catch (error) {
-    console.error('Error generating token:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
+  res.json({ success: true });
+}));
 
-exports.validateToken = async (req, res) => {
-  try {
-    const { token } = req.params;
-
-    const foundToken = await Models.Token.findOne({
-      where: { token },
-    });
-
-    if (foundToken && (!foundToken.expires || foundToken.expires > new Date())) {
-      res.json({ valid: true });
-    } else {
-      res.json({ valid: false });
-    }
-  } catch (error) {
-    console.error('Error validating token:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
-
-exports.deleteToken = async (req, res) => {
-  try {
-    const { token } = req.params;
-
-    await Models.Token.destroy({
-      where: { token },
-    });
-
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Error deleting token:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
-
-// Export du middleware pour être utilisé dans d'autres fichiers de route
-exports.checkSession = checkSession;
+// Export du routeur
+module.exports = router;

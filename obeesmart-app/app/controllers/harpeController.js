@@ -1,33 +1,29 @@
+'use strict';
 const express = require('express');
 const { Harpe } = require('../models');
+const asyncHandler = require('express-async-handler');
+const verifyToken = require('../middleware/verifyToken'); // Add this line for token verification
 
 const router = express.Router();
 
-// Middleware de vérification de session
-const checkSession = (req, res, next) => {
-  if (req.session.user && req.cookies.user_sid) {
-    next(); // Si la session existe, continuez
-  } else {
-    res.redirect('/login'); // Sinon, redirigez vers la page de connexion
-  }
-};
+// Middleware de vérification du token
+router.use(verifyToken);
 
-// Appliquer le middleware à toutes les routes
-router.use(checkSession);
-
-const getAllHarpes = async (req, res) => {
+// Obtenir toutes les harpes
+router.get('/', asyncHandler(async (req, res) => {
   try {
     const harpes = await Harpe.findAll();
     res.json(harpes);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}));
 
-const getHarpeById = async (req, res) => {
-  const { id } = req.params;
+// Obtenir une harpe par ID
+router.get('/:id', asyncHandler(async (req, res) => {
   try {
+    const { id } = req.params;
     const harpe = await Harpe.findByPk(id);
     if (harpe) {
       res.json(harpe);
@@ -36,41 +32,42 @@ const getHarpeById = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}));
 
-const createHarpe = async (req, res) => {
-  const { /* extract required fields from request body */ } = req.body;
+// Créer une nouvelle harpe
+router.post('/', asyncHandler(async (req, res) => {
   try {
-    const newHarpe = await Harpe.create({ /* assign values to model attributes */ });
+    const newHarpe = await Harpe.create(req.body);
     res.json(newHarpe);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}));
 
-const updateHarpe = async (req, res) => {
-  const { id } = req.params;
-  const { /* extract fields to update from request body */ } = req.body;
+// Mettre à jour une harpe
+router.put('/:id', asyncHandler(async (req, res) => {
   try {
+    const { id } = req.params;
     const harpe = await Harpe.findByPk(id);
     if (harpe) {
-      await harpe.update({ /* assign updated values to model attributes */ });
+      await harpe.update(req.body);
       res.json(harpe);
     } else {
       res.status(404).json({ error: 'Harpe not found' });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}));
 
-const deleteHarpe = async (req, res) => {
-  const { id } = req.params;
+// Supprimer une harpe
+router.delete('/:id', asyncHandler(async (req, res) => {
   try {
+    const { id } = req.params;
     const harpe = await Harpe.findByPk(id);
     if (harpe) {
       await harpe.destroy();
@@ -80,8 +77,8 @@ const deleteHarpe = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}));
 
 module.exports = router;

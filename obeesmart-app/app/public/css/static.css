@@ -1,0 +1,137 @@
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: "Arial", sans-serif;
+  background: black;
+  color: white;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-image: url("../images/bannierenoire.png");
+  background-size: cover;
+  padding: 20px;
+  color: white;
+  max-width: 1024px;
+  width: 100%;
+  height: 114px;
+  max-height: 114px;
+  margin: 0 auto; /* Centrer horizontalement */
+}
+
+.french-flag {
+  width: 20px;
+  margin-right: 10px;
+}
+
+.counter-container {
+  margin-left: auto;
+}
+
+.counter {
+  text-align: center;
+  font-size: 18px;
+}
+
+.counter-number {
+  color: #ffd700; /* Couleur jaune miel pour les chiffres du compteur */
+}
+
+nav {
+  display: flex;
+  justify-content: space-around;
+  background: #000;
+  padding: 10px;
+  max-width: 1024px; /* Limiter la largeur à 1024 pixels */
+  margin: 0 auto; /* Centrer horizontalement */
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  transition:
+    color 0.3s,
+    text-shadow 0.3s;
+  margin-right: 200px; /* Ajout de la marge à droite */
+}
+
+nav a:last-child {
+  margin-right: 0; /* Pas de marge à droite pour le dernier élément */
+}
+nav a:hover {
+  color: #ffd700; /* Couleur jaune miel */
+  text-shadow: 0 0 10px #ffd700; /* Effet de lueur jaune miel */
+}
+
+.summary {
+  text-align: center;
+  padding: 50px;
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  background: #000;
+  width: 100%;
+  margin-top: auto; /* Pour rester en bas de la page */
+  font-size: 12px; /* Réduire la taille de la police */
+}
+
+.contact-container {
+  align-items: flex-start; /* Aligner en haut */
+  display: flex;
+  justify-content: center; /* Centrer horizontalement */
+  align-items: center; /* Centrer verticalement */
+  flex-wrap: wrap; /* Permettre le retour à la ligne si l'espace est insuffisant */
+  max-width: 1024px;
+  margin: 0 auto; /* Centrer horizontalement */
+  padding: 20px;
+}
+
+
+.contact-info a {
+  color: white;
+  text-decoration: none;
+  transition:
+    color 0.3s,
+    text-shadow 0.3s;
+}
+
+.contact-info a:hover {
+  color: yellow; /* ou toute autre couleur de votre choix */
+  text-shadow: 0 0 10px yellow; /* effet de glow */
+}
+
+.contact-info {
+    flex: 1; /* La première colonne prendra autant d'espace que possible */
+    margin: 0 200px 100px 0; /* Ajouter une marge en bas et à droite, laisser la marge à gauche à zéro */
+    text-align: left; /* Aligner le texte à gauche */
+}
+
+.map-image img {
+    width: 100%; /* La deuxième colonne prendra autant de largeur que possible */
+    height: auto;
+}
+
+.additional-info-container {
+  max-width: 1024px;
+  margin: 0 auto; /* Pour centrer le conteneur horizontalement */
+}
+
+.additional-info {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.column {
+  flex: 1;
+  margin: 0 10px;
+  max-width: calc((100% - 20px) / 3);
+}

@@ -15,6 +15,10 @@ module.exports = {
     redis_user: 'PLOP',
     redis_password: '123456',
     redis_ttl: 260,
+    influx_url: 'your_influxdb_host',
+    influx_bucket: 'your_influxdb_database',
+    influx_org: 'your_influxdb_organization',
+    influx_token: 'your_influxdb_token',
   },
   development: {
     // database
@@ -33,6 +37,10 @@ module.exports = {
     redis_user: process.env.REDIS_USER,
     redis_paswword: process.env.REDIS_PASSWORD,
     redis_ttl: 260,
+    influx_url: process.env.INFLUXDB_HOST,
+    influx_bucket: process.env.INFLUX_BUCKET,
+    influx_org: process.env.INFLUX_ORG,
+    influx_token: process.env.INFLUX_TOKEN,
   },
   staging: {
     // database
@@ -51,6 +59,10 @@ module.exports = {
     redis_user: process.env.REDIS_USER,
     redis_paswword: process.env.REDIS_PASSWORD,
     redis_ttl: 260,
+    influx_url: process.env.INFLUXDB_HOST,
+    influx_bucket: process.env.INFLUX_BUCKET,
+    influx_org: process.env.INFLUX_ORG,
+    influx_token: process.env.INFLUX_TOKEN,
   },
   production: {
     // database
@@ -70,5 +82,9 @@ module.exports = {
     redis_user: process.env.REDIS_USER,
     redis_paswword: process.env.REDIS_PASSWORD,
     redis_ttl: 260,
+    influx_url: process.env.INFLUXDB_HOST,
+    influx_bucket: process.env.INFLUX_BUCKET,
+    influx_org: process.env.INFLUX_ORG,
+    influx_token: process.env.INFLUX_TOKEN,
   },
 };

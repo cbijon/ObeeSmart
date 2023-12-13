@@ -1,89 +1,58 @@
 const express = require('express');
 const { CentraleHarpes } = require('../models');
+const asyncHandler = require('express-async-handler');
+const verifyToken = require('../middleware/verifyToken'); // Add this line for token verification
+
 const router = express.Router();
 
-// Middleware de vérification de session
-const checkSession = (req, res, next) => {
-  if (req.session.user && req.cookies.user_sid) {
-    next(); // Si la session existe, continuez
-  } else {
-    res.redirect('/login'); // Sinon, redirigez vers la page de connexion
-  }
-};
-
-// Appliquer le middleware à toutes les routes
-router.use(checkSession);
+// Middleware de vérification du token
+router.use(verifyToken);
 
 // Obtenir toutes les centrales harpes
-router.get('/', async (req, res) => {
-  try {
-    const centraleHarpes = await CentraleHarpes.findAll();
-    res.json(centraleHarpes);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+router.get('/', asyncHandler(async (req, res) => {
+  const centraleHarpes = await CentraleHarpes.findAll();
+  res.json(centraleHarpes);
+}));
 
 // Obtenir une centrale harpe par ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', asyncHandler(async (req, res) => {
   const { id } = req.params;
-  try {
-    const centraleHarpe = await CentraleHarpes.findByPk(id);
-    if (centraleHarpe) {
-      res.json(centraleHarpe);
-    } else {
-      res.status(404).json({ error: 'CentraleHarpe not found' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+  const centraleHarpe = await CentraleHarpes.findByPk(id);
+  if (centraleHarpe) {
+    res.json(centraleHarpe);
+  } else {
+    res.status(404).json({ error: 'CentraleHarpe not found' });
   }
-});
+}));
 
 // Créer une nouvelle centrale harpe
-router.post('/', async (req, res) => {
-  try {
-    const newCentraleHarpe = await CentraleHarpes.create(req.body);
-    res.json(newCentraleHarpe);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+router.post('/', asyncHandler(async (req, res) => {
+  const newCentraleHarpe = await CentraleHarpes.create(req.body);
+  res.json(newCentraleHarpe);
+}));
 
 // Mettre à jour une centrale harpe
-router.put('/:id', async (req, res) => {
+router.put('/:id', asyncHandler(async (req, res) => {
   const { id } = req.params;
-  try {
-    const centraleHarpe = await CentraleHarpes.findByPk(id);
-    if (centraleHarpe) {
-      await centraleHarpe.update(req.body);
-      res.json(centraleHarpe);
-    } else {
-      res.status(404).json({ error: 'CentraleHarpe not found' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+  const centraleHarpe = await CentraleHarpes.findByPk(id);
+  if (centraleHarpe) {
+    await centraleHarpe.update(req.body);
+    res.json(centraleHarpe);
+  } else {
+    res.status(404).json({ error: 'CentraleHarpe not found' });
   }
-});
+}));
 
 // Supprimer une centrale harpe
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', asyncHandler(async (req, res) => {
   const { id } = req.params;
-  try {
-    const centraleHarpe = await CentraleHarpes.findByPk(id);
-    if (centraleHarpe) {
-      await centraleHarpe.destroy();
-      res.json({ message: 'CentraleHarpe deleted successfully' });
-    } else {
-      res.status(404).json({ error: 'CentraleHarpe not found' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+  const centraleHarpe = await CentraleHarpes.findByPk(id);
+  if (centraleHarpe) {
+    await centraleHarpe.destroy();
+    res.json({ message: 'CentraleHarpe deleted successfully' });
+  } else {
+    res.status(404).json({ error: 'CentraleHarpe not found' });
   }
-});
+}));
 
 module.exports = router;

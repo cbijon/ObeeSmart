@@ -1,47 +1,44 @@
 const express = require('express');
 const { validationResult } = require('express-validator');
 const Models = require('../models'); // Ajustez le chemin si nécessaire
+const verifyToken = require('../middleware/verifyToken'); // Add this line for token verification
 
 const router = express.Router();
 
-// Middleware de vérification de session
-const checkSession = (req, res, next) => {
-  if (req.session.user && req.cookies.user_sid) {
-    next(); // Si la session existe, continuez
-  } else {
-    res.redirect('/login'); // Sinon, redirigez vers la page de connexion
-  }
-};
-
-// Appliquer le middleware à toutes les routes
-router.use(checkSession);
+// Middleware de vérification du token
+router.use(verifyToken);
 
 // Afficher le formulaire de modification des préférences utilisateur
 router.get('/', (req, res) => {
-  // Supposons que vous ayez une variable 'user' disponible dans votre session
-  // const user = req.session.user;
-  const errors = validationResult(req);
-  res.render('preferences', {
-    users: req.session.user,
-    title: 'Preferences',
-    is_admin: req.session.user.is_admin,
-  });
+  try {
+    const errors = validationResult(req);
+    res.json({
+      users: req.decoded,
+      title: 'Preferences',
+      is_admin: req.decoded.is_admin,
+      errors: errors.array(),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 });
 
 // Gérer la soumission du formulaire pour mettre à jour les préférences utilisateur
 router.post('/', async (req, res) => {
-  // Valider les données du formulaire en utilisant express-validator
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    // S'il y a des erreurs de validation, réafficher le formulaire avec des messages d'erreur
-    return res.render('preferences', {
-      users: req.session.user,
-      title: 'Preferences',
-      is_admin: req.session.user.is_admin,
-    });
-  }
-
   try {
+    // Valider les données du formulaire en utilisant express-validator
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      // S'il y a des erreurs de validation, réafficher le formulaire avec des messages d'erreur
+      return res.json({
+        users: req.decoded,
+        title: 'Preferences',
+        is_admin: req.decoded.is_admin,
+        errors: errors.array(),
+      });
+    }
+
     // Mettre à jour les préférences utilisateur dans la base de données
     const updatedUser = await Models.User.update(
       {
@@ -53,7 +50,7 @@ router.post('/', async (req, res) => {
         // Ajouter d'autres champs au besoin
       },
       {
-        where: { id: req.session.user.id }, // Supposons que l'ID de l'utilisateur soit stocké dans la session
+        where: { id: req.decoded.id }, // Utiliser l'ID de l'utilisateur à partir du token
       }
     );
 
@@ -63,12 +60,12 @@ router.post('/', async (req, res) => {
       },
     });
 
-    req.session.user = User.dataValues;
+    req.decoded = User.dataValues;
     // Supposons que vous ayez un message de réussite ou une logique de redirection
-    res.redirect('/preferences'); // Rediriger vers une page de réussite ou le tableau de bord
+    res.json({ message: 'Preferences updated successfully' });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 

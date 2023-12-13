@@ -1,66 +1,79 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const { validationResult } = require('express-validator');
-const Models = require('../models');
+const jwt = require('jsonwebtoken');
 const randomstring = require('randomstring');
+const asyncHandler = require('express-async-handler');
+const Models = require('../models');
+const verifyToken = require('../middleware/verifyToken'); // Add this line for token verification
 
 const router = express.Router();
 
+
+
 // Obtenir tous les utilisateurs
-router.getAllUser = async (req, res) => {
-  console.log(req.session.user);
-  console.log(req.cookies.user_sid);
-  if (req.session && req.cookies.user_sid && req.session.user.is_admin) {
-    Models.User.findAll({
-      attributes: [
-        'id',
-        'firstname',
-        'lastname',
-        'email',
-        'is_admin',
-        'group_id',
-        'role',
-      ],
-      order: [['lastname', 'ASC']],
-    }).then(function (User) {
-      Models.Group.findAll({
-        attributes: ['id', 'name'],
-      }).then(function (Group) {
-        res.render('users', {
-          title: 'Gestion des utilisateurs',
-          users: User,
-          groups: Group,
-          is_admin: req.session.user.is_admin,
-        });
+router.get('/getAll', verifyToken, asyncHandler(async (req, res) => {
+  try {
+    if (req.decoded.is_admin) {
+      const users = await Models.User.findAll({
+        attributes: [
+          'id',
+          'firstname',
+          'lastname',
+          'email',
+          'is_admin',
+          'group_id',
+          'role',
+        ],
+        order: [['lastname', 'ASC']],
       });
-    });
-  } else {
-    res.redirect('/login');
+
+      const groups = await Models.Group.findAll({
+        attributes: ['id', 'name'],
+      });
+
+      res.json({
+        title: 'Gestion des utilisateurs',
+        users: users,
+        groups: groups,
+        is_admin: req.decoded.is_admin,
+      });
+    } else {
+      res.status(403).json({ message: 'Forbidden: Insufficient privileges' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}));
 
 // Obtenir un utilisateur par ID
-router.getUserById = async (req, res) => {
-  if (req.session.user && req.cookies.user_sid && req.session.user.is_admin) {
-    Models.User.findOne({
-      where: { id: req.params.userId },
-    }).then(function (User) {
-      Models.Group.findAll().then(function (Group) {
-        res.render('users_edit', {
-          title: 'Edition utilisateur',
-          users: User,
-          groups: Group,
-          is_admin: req.session.user.is_admin,
-        });
+router.get('/getUserById/:userId', verifyToken, asyncHandler(async (req, res) => {
+  try {
+    if (req.decoded.is_admin) {
+      const user = await Models.User.findOne({
+        where: { id: req.params.userId },
       });
-    });
-  } else {
-    res.redirect('/login');
+
+      const groups = await Models.Group.findAll();
+
+      res.json({
+        title: 'Edition utilisateur',
+        users: user,
+        groups: groups,
+        is_admin: req.decoded.is_admin,
+      });
+    } else {
+      res.status(403).json({ message: 'Forbidden: Insufficient privileges' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}));
 
 // Créer un nouvel utilisateur
-router.createUser = async (req, res) => {
+router.post('/createUser', verifyToken, asyncHandler(async (req, res) => {
   try {
     // Validation des données du formulaire
     const errors = validationResult(req);
@@ -86,134 +99,140 @@ router.createUser = async (req, res) => {
       contact_tel: req.body.contact_tel,
     });
 
-    res.redirect('/users');
+    res.json({ message: 'User created successfully' });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Erreur serveur');
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}));
 
 // Mettre à jour un utilisateur
-router.updateUser = async (req, res) => {
-  if (req.session.user && req.cookies.user_sid && req.session.user.is_admin) {
-    Models.User.update(
-      {
-        login: req.body.login,
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        email: req.body.email,
-        group_id: req.body.group_id,
-        is_admin: req.body.is_admin,
-        contact_tel: req.body.contact_tel,
-      },
-      {
-        where: { id: req.params.userId },
-      }
-    ).then(function () {
-      res.redirect('/users');
-    });
-  } else {
-    res.redirect('/login');
+router.put('/updateUser/:userId', verifyToken, asyncHandler(async (req, res) => {
+  try {
+    if (req.decoded.is_admin) {
+      await Models.User.update(
+        {
+          login: req.body.login,
+          firstname: req.body.firstname,
+          lastname: req.body.lastname,
+          email: req.body.email,
+          group_id: req.body.group_id,
+          is_admin: req.body.is_admin,
+          contact_tel: req.body.contact_tel,
+        },
+        {
+          where: { id: req.params.userId },
+        }
+      );
+
+      res.json({ message: 'User updated successfully' });
+    } else {
+      res.status(403).json({ message: 'Forbidden: Insufficient privileges' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}));
 
 // Supprimer un utilisateur
-router.deleteUser = async (req, res) => {
-  if (req.session.user && req.cookies.user_sid && req.session.user.is_admin) {
-    Models.User.destroy({
-      where: {
-        id: req.params.userId,
-      },
-    }).then(function () {
-      res.redirect('/users');
-    });
-  } else {
-    res.redirect('/login');
+router.delete('/deleteUser/:userId', verifyToken, asyncHandler(async (req, res) => {
+  try {
+    if (req.decoded.is_admin) {
+      await Models.User.destroy({
+        where: {
+          id: req.params.userId,
+        },
+      });
+
+      res.json({ message: 'User deleted successfully' });
+    } else {
+      res.status(403).json({ message: 'Forbidden: Insufficient privileges' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}));
 
 // Activer un utilisateur
-router.enableUser = async (req, res) => {
-  if (req.session.user && req.cookies.user_sid && req.session.user.is_admin) {
-    Models.User.update(
-      {
-        role: 'enable',
-      },
-      {
-        where: { id: req.params.userId },
-      }
-    ).then(function () {
-      res.redirect('/users');
-    });
-  } else {
-    res.redirect('/login');
+router.put('/enableUser/:userId', verifyToken, asyncHandler(async (req, res) => {
+  try {
+    if (req.decoded.is_admin) {
+      await Models.User.update(
+        {
+          role: 'enable',
+        },
+        {
+          where: { id: req.params.userId },
+        }
+      );
+
+      res.json({ message: 'User enabled successfully' });
+    } else {
+      res.status(403).json({ message: 'Forbidden: Insufficient privileges' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}));
 
 // Désactiver un utilisateur
-router.disableUser = async (req, res) => {
-  if (req.session.user && req.cookies.user_sid && req.session.user.is_admin) {
-    Models.User.update(
-      {
-        role: 'disabled',
-      },
-      {
-        where: { id: req.params.userId },
-      }
-    ).then(function () {
-      res.redirect('/users');
-    });
-  } else {
-    res.redirect('/login');
-  }
-};
+router.put('/disableUser/:userId', verifyToken, asyncHandler(async (req, res) => {
+  try {
+    if (req.decoded.is_admin) {
+      await Models.User.update(
+        {
+          role: 'disabled',
+        },
+        {
+          where: { id: req.params.userId },
+        }
+      );
 
-router.loginUser = async (req, res) => {
+      res.json({ message: 'User disabled successfully' });
+    } else {
+      res.status(403).json({ message: 'Forbidden: Insufficient privileges' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+}));
+
+// Login utilisateur
+router.post('/login', asyncHandler(async (req, res) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
-    const User = await Models.User.findOne({
+    const user = await Models.User.findOne({
       where: {
         email: email,
       },
     });
 
-    if (!User) {
-      console.log('Invalid email');
-      return res.redirect('/login');
+    if (!user || !user.isEnable() || !user.validPassword(password)) {
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    if (!User.isEnable()) {
-      console.log('User disabled');
-      return res.redirect('/login');
-    }
+    const token = jwt.sign(
+      { id: user.id, email: user.email, is_admin: user.is_admin },
+      'your_secret_key',
+      { expiresIn: '1h' }
+    );
 
-    if (!User.validPassword(password)) {
-      console.log('Invalid password');
-      return res.redirect('/login');
-    }
-
-    console.log('Login successful');
-    req.session.user = User.dataValues;
-    console.log(req.session.user);
-    res.cookie('user_sid', randomstring.generate(), { maxAge: 10800 });
-    return res.redirect('/dashboard');
+    res.json({ token: token });
   } catch (error) {
     console.error('Error during login:', error);
-    return res.redirect('/login');
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}));
 
-router.logoutUser = (req, res) => {
-  if (req.session.user && req.cookies.user_sid) {
-    res.clearCookie('user_sid');
-    req.session.destroy();
-    res.redirect('/');
-    console.log('Logout successful');
-  } else {
-    res.redirect('/login');
-  }
-};
+// Logout utilisateur
+router.get('/logout', (req, res) => {
+  res.json({ message: 'Logout successful' });
+});
 
 // Export du routeur
 module.exports = router;

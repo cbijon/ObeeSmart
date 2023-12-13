@@ -1,67 +1,31 @@
-var env = process.env.NODE_ENV || "development";
 const express = require("express");
-const session = require("express-session");
-const RedisStore = require("connect-redis")(session);
-const { Sequelize } = require("sequelize");
 const randomstring = require("randomstring");
-const redis = require("redis");
 const Models = require("../models");
-const { body } = require('express-validator'); // Correct import statement
-const config = require(__dirname + "/../config/config.js")[env];
+var env = process.env.NODE_ENV || 'development';
+var config = require(__dirname + './../config/config.js')[env];
+const asyncHandler = require("express-async-handler");
+const queryTotalFrags = require("./../influx/queryTotalFrags"); //import query
+const queryDemoScreen = require("./../influx/queryDemoScreen"); //import query
+
+const app = express.Router();
+
+const logAction = async (action, user_id, details) => {
+  try {
+    await Models.Log.create({
+      action,
+      user_id,
+      details,
+    });
+  } catch (error) {
+    console.error('Error logging action:', error);
+    // Handle the error as needed
+  }
+};
+// Usage
+// logAction('User Login', userId, { ipAddress: '127.0.0.1' });
 
 
-
-const router = express.Router();
-
-
-//const groupController = require("../controllers/groupController");
-const userController = require("../controllers/userController");
-const preferencesController = require('../controllers/preferencesController');
-const passwordController = require('../controllers/passwordController');
-
-const groupRoutes = require('../routes/group');
-const userRoutes = require('../routes/user');
-const preferencesRoutes = require('../routes/preferences');
-const passwordRoutes = require('../routes/password');
-
-router.use('/groups', groupRoutes);
-router.use('/users', userRoutes);
-router.use('/preferences', preferencesRoutes);
-router.use('/password', passwordRoutes);
-
-
-console.log(env);
-console.log(config.redis_host);
-
-//const client = redis.createClient({url:'redis://'+config.redis_user+':'+config.redis_password+'@'+config.redis_host+':'+config.redis_port  });
-const client = redis.createClient({
-  url: "redis://" + config.redis_host + ":" + config.redis_port,
-});
-client.connect().catch(console.error);
-
-client.on("error", (err) => console.log("Redis Client Error", err));
-
-
-// Initialize store.
-let redisStore = new RedisStore({
-  client: client,
-  prefix: "obeesmart:",
-});
-
-router.use(
-  session({
-    key: "user_sid",
-    store: redisStore,
-    resave: false, // required: force lightweight session keep alive (touch)
-    saveUninitialized: false, // recommended: only save session when data exists
-    secret: randomstring.generate(),
-    cookie: {
-      expires: 600000,
-    },
-  })
-);
-
-router.use((req, res, next) => {
+app.use((req, res, next) => {
   if (!req.session.user && req.cookies) {
     res.clearCookie("user_sid");
     console.log("clearing cookie");
@@ -69,7 +33,7 @@ router.use((req, res, next) => {
   next();
 });
 
-var sessionChecker = (req, res, next) => {
+const sessionChecker = (req, res, next) => {
   if (req.session.user && req.cookies.user_sid) {
     res.redirect("/dashboard");
     console.log("sessionChecker: check logged-in user");
@@ -78,22 +42,40 @@ var sessionChecker = (req, res, next) => {
   }
 };
 
-router.get("/", sessionChecker, (req, res) => {
+app.get("/data/totalfrelons", async (req, res) => {
+  //if (req.session && req.cookies && req.cookies.user_sid) {
+    const data = await queryTotalFrags()
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
+    res.end(JSON.stringify(data))
+/*
+  } else {
+    console.log("no sess or cook");
+    console.log("Session Info:", req.session);
+    res.redirect("/login");
+  }
+  */
+});
+
+app.get("/data/demoscreen", async (req, res) => {
+  //if (req.session && req.cookies && req.cookies.user_sid) {
+    const data = await queryDemoScreen()
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
+    res.end(JSON.stringify(data))
+/*
+  } else {
+    console.log("no sess or cook");
+    console.log("Session Info:", req.session);
+    res.redirect("/login");
+  }
+  */
+});
+
+app.get("/", sessionChecker, (req, res) => {
   res.redirect("/dashboard");
   console.log("redirect home page default");
 });
 
-router
-  .route("/login")
-  .get(sessionChecker, (req, res) => {
-    res.render("login", {
-      title: "ObeeSmart login page",
-    });
-    console.log("Login page loaded");
-  })
-  .post(userController.loginUser);
-
-router.get("/dashboard", (req, res) => {
+app.get("/dashboard", (req, res) => {
   if (req.session && req.cookies && req.cookies.user_sid) {
     console.log("User Info:", req.session.user);
     res.render("index", {
@@ -107,46 +89,53 @@ router.get("/dashboard", (req, res) => {
   }
 });
 
-router.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Erreur serveur');
+// route for user Login
+app
+  .route("/login")
+  .get(sessionChecker, (req, res) => {
+    res.render("login", {
+      title: "Login page",
+    });
+    console.log("Login page loaded");
+  })
+  .post(asyncHandler(async (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    const user = await Models.User.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user || !user.isEnable() || !user.validPassword(password)) {
+      res.redirect("/login");
+      console.log("Invalid credentials");
+    } else {
+      console.log("Login ok");
+      req.session.user = user.dataValues;
+      console.log(req.session.user);
+      res.cookie("user_sid", randomstring.generate(), { maxAge: 10800 });
+      logAction('User Login', req.session.user_id, { ipAddress: '127.0.0.1' });
+      res.redirect("/dashboard");
+    }
+  }));
+
+// Logout utilisateur
+app.get("/logout", (req, res) => {
+  if (req.session.user && req.cookies.user_sid) {
+    logAction('User Logout', req.session.user_id, { ipAddress: '127.0.0.1' });
+    res.clearCookie("user_sid");
+    req.session.destroy();
+    res.redirect("/");
+    console.log("Logout successful");
+  } else {
+    res.redirect("/login");
+  }
 });
 
-// groups
-router.get('/groups', groupController.manageGroups);
-router.post('/groups/create', groupController.createGroup);
-router.get('/groups/:group_id/destroy', groupController.destroyGroup);
-router.get('/groups/:group_id/edit', groupController.editGroup);
-router.post('/groups/:group_id/update', groupController.updateGroup);
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Erreur serveur");
+});
 
-//users
-router.get('/users', userController.getAllUser);
-router.get('/users/:userId', userController.getUserById);
-router.post('/users/create', userController.createUser);
-router.post('/users/:userId/update', userController.updateUser);
-router.delete('/users/:userId/destroy', userController.deleteUser);
-// Activer un utilisateur
-router.get('/users/:userId/enable', userController.enableUser);
-// Désactiver un utilisateur
-router.get('/users/:userId/disable', userController.disableUser);
-router.get("/logout", userController.logoutUser);
-// Passsword upddate
-router.get('/password', passwordController.showPasswordForm);
-router.post('/updatepassword', passwordController.updatePassword);
-// Display the form for editing user preferences
-router.get('/preferences', preferencesController.showPreferencesForm);
-// Handle form submission for updating user preferences
-
-router.post(
-  '/updatepref',
-  [
-    // Add express-validator validations here as needed
-    body('login').notEmpty().withMessage('Login is required'),
-    body('email').isEmail().withMessage('Invalid email address'),
-    // Add validations for other fields
-  ],
-  preferencesController.updatePreferences
-);
-
-
-module.exports = router;
+module.exports = app;

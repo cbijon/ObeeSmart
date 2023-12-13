@@ -10,8 +10,7 @@ module.exports = {
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4,
           },
-          device_name: DataTypes.STRING,
-          dev_eui: DataTypes.STRING,
+          name: DataTypes.STRING,
           created_at: DataTypes.DATE,
           updated_at: DataTypes.DATE,
         },
@@ -27,6 +26,20 @@ module.exports = {
             type: DataTypes.UUID,
             references: {
               model: "User", // name of Target model
+              key: "id", // key in Target model that we're referencing
+            },
+            onUpdate: "CASCADE",
+            onDelete: "SET NULL",
+          }
+        );
+      }).then(() => {
+        return sequelize.addColumn(
+          "Ruche", // name of Source model
+          "ruchier_id", // name of the key we're adding
+          {
+            type: DataTypes.UUID,
+            references: {
+              model: "Ruchier", // name of Target model
               key: "id", // key in Target model that we're referencing
             },
             onUpdate: "CASCADE",
