@@ -24,10 +24,11 @@ const queryPoidruche =
 from(bucket: "` +
   process.env.INFLUX_BUCKET +
   `")
-  |> range(start:  -2h, stop: now())
+  |> range(start:  -7d, stop: now())
   |> filter(fn: (r) => r["_measurement"] == "device_frmpayload_data_load")
   |> filter(fn: (r) => r["_field"] == "value")
-  |> last()`;
+  |> aggregateWindow(every: 1d, fn: mean, createEmpty: false)
+  |> yield(name: "mean")`;
 
 const queryTemp =
   `
