@@ -86,7 +86,7 @@ from(bucket: "` +
   process.env.INFLUX_BUCKET +
   `")
   |> range(start:  -2h, stop: now())
-  |> filter(fn: (r) => r["_measurement"] == "device_frmpayload_data_pressureOut")
+  |> filter(fn: (r) => r["_measurement"] == "device_frmpayload_data_pressure")
   |> filter(fn: (r) => r["_field"] == "value")
   |> last()`;
 
