@@ -80,6 +80,17 @@ from(bucket: "` +
   |> filter(fn: (r) => r["_field"] == "value")
   |> last()`;
 
+  const queryPressureOut =
+  `
+from(bucket: "` +
+  process.env.INFLUX_BUCKET +
+  `")
+  |> range(start:  -2h, stop: now())
+  |> filter(fn: (r) => r["_measurement"] == "device_frmpayload_data_pressureOut")
+  |> filter(fn: (r) => r["_field"] == "value")
+  |> last()`;
+
+
 const queryHarpeStats = (harpeNumber) =>
   `
 from(bucket: "` +
@@ -108,6 +119,7 @@ const influxConnect = async () => {
   const tempOut = [];
   const humidity = [];
   const humidityOut = [];
+  const pressureOut = [];
   const harpeStats = [];
   const harpePower = [];
 
@@ -207,6 +219,20 @@ const influxConnect = async () => {
       console.log("\nCollect ROWS ERROR");
     });
 
+    await queryApi
+    .collectRows(
+      queryPressureOut /*, you can specify a row mapper as a second arg */
+    )
+    .then((data) => {
+      data.forEach((x) => {
+        pressureOut.push({ [x.device_name]: x._value });
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      console.log("\nCollect ROWS ERROR");
+    });
+
   // Ajoutez une boucle pour récupérer l'état de chaque harpe
   for (let i = 1; i <= 7; i++) {
     await queryApi
@@ -241,6 +267,7 @@ const influxConnect = async () => {
     tempOut,
     humidity,
     humidityOut,
+    pressureOut,
     harpeStats,
     harpePower,
   };
