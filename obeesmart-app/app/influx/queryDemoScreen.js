@@ -28,6 +28,17 @@ from(bucket: "` +
   |> filter(fn: (r) => r["_measurement"] == "device_frmpayload_data_load")
   |> filter(fn: (r) => r["_field"] == "value")
   |> aggregateWindow(every: 1d, fn: mean, createEmpty: false)
+  |> last()`;
+
+const queryLastPoidruche =
+  `
+from(bucket: "` +
+  process.env.INFLUX_BUCKET +
+  `")
+  |> range(start:  -2h, stop: now())
+  |> filter(fn: (r) => r["_measurement"] == "device_frmpayload_data_load")
+  |> filter(fn: (r) => r["_field"] == "value")
+  |> aggregateWindow(every: 1d, fn: mean, createEmpty: false)
   |> yield(name: "mean")`;
 
 const queryTemp =
@@ -114,6 +125,7 @@ from(bucket: "` +
 const influxConnect = async () => {
   const frelons = [];
   const poid = [];
+  const lastPoid = [];
   const temp = [];
   const tempMiel = [];
   const tempOut = [];
@@ -144,6 +156,20 @@ const influxConnect = async () => {
     .then((data) => {
       data.forEach((x) => {
         poid.push({ [x.device_name]: x._value });
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      console.log("\nCollect ROWS ERROR");
+    });
+
+    await queryApi
+    .collectRows(
+      queryLastPoidruche /*, you can specify a row mapper as a second arg */
+    )
+    .then((data) => {
+      data.forEach((x) => {
+        lastPoid.push({ [x.device_name]: x._value });
       });
     })
     .catch((error) => {
@@ -262,6 +288,7 @@ const influxConnect = async () => {
   return {
     frelons,
     poid,
+    lastPoid,
     temp,
     tempMiel,
     tempOut,
