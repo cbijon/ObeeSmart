@@ -159,7 +159,7 @@ const influxConnect = async () => {
     .catch((error) => {
       console.error(error);
       console.log("\nCollect ROWS ERROR");
-    })
+    });
 
   await queryApi
     .collectRows(
