@@ -150,7 +150,7 @@ const influxConnect = async () => {
     )
     .then((data) => {
       data.forEach((x) => {
-        alimHarpes.push({ frags: x._value });
+        alimHarpes.push({ [x.device_name]: x._value });
       });
     })
     .catch((error) => {
