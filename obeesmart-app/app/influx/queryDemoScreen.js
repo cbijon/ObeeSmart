@@ -9,6 +9,16 @@ const client = new InfluxDB({ url: process.env.INFLUX_URL, token: token });
 
 const queryApi = client.getQueryApi(org);
 
+const queryAlimHarpes =
+  `
+from(bucket: "` +
+  process.env.INFLUX_BUCKET +
+  `")
+  |> range(start:  -2h, stop: now())
+  |> filter(fn: (r) => r["_measurement"] == "device_frmpayload_data_battery")
+  |> filter(fn: (r) => r["_field"] == "value")
+  |> last()`;
+
 const queryTotalFrelons =
   `
 from(bucket: "` +
@@ -121,6 +131,7 @@ from(bucket: "` +
   |> last()`;
 
 const influxConnect = async () => {
+  const alimHarpes = [];
   const frelons = [];
   const poid = [];
   const lastPoid = [];
@@ -132,6 +143,20 @@ const influxConnect = async () => {
   const pressureOut = [];
   const harpeStats = [];
   const harpePower = [];
+
+  await queryApi
+    .collectRows(
+      queryAlimHarpes /*, you can specify a row mapper as a second arg */
+    )
+    .then((data) => {
+      data.forEach((x) => {
+        alimHarpes.push({ frags: x._value });
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      console.log("\nCollect ROWS ERROR");
+    })
 
   await queryApi
     .collectRows(
@@ -284,6 +309,7 @@ const influxConnect = async () => {
   }
 
   return {
+    alimHarpes,
     frelons,
     poid,
     lastPoid,
