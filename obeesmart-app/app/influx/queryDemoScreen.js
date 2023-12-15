@@ -17,6 +17,9 @@ from(bucket: "` +
   |> range(start:  -2h, stop: now())
   |> filter(fn: (r) => r["_measurement"] == "device_frmpayload_data_battery")
   |> filter(fn: (r) => r["_field"] == "value")
+  |> group(columns: ["device_name"]) // Ajouter cette ligne pour grouper par device_name
+  |> sort(columns: ["_time"], desc: true) // Ajouter cette ligne pour trier par _time (date) de manière décroissante
+  |> limit(n: 1) // Ajouter cette ligne pour limiter à une seule ligne (la dernière)
   |> last()`;
 
 const queryTotalFrelons =
