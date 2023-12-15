@@ -28,7 +28,7 @@ from(bucket: "` +
   |> filter(fn: (r) => r["_measurement"] == "device_frmpayload_data_load")
   |> filter(fn: (r) => r["_field"] == "value")
   |> aggregateWindow(every: 1d, fn: mean, createEmpty: false)
-  |> last()`;
+  |> yield(name: "mean")`;
 
 const queryLastPoidruche =
   `
@@ -38,7 +38,7 @@ from(bucket: "` +
   |> range(start:  -2h, stop: now())
   |> filter(fn: (r) => r["_measurement"] == "device_frmpayload_data_load")
   |> filter(fn: (r) => r["_field"] == "value")
-  |> yield(name: "mean")`;
+  |> last()`;
 
 const queryTemp =
   `
