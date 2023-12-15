@@ -38,7 +38,6 @@ from(bucket: "` +
   |> range(start:  -2h, stop: now())
   |> filter(fn: (r) => r["_measurement"] == "device_frmpayload_data_load")
   |> filter(fn: (r) => r["_field"] == "value")
-  |> aggregateWindow(every: 1d, fn: mean, createEmpty: false)
   |> yield(name: "mean")`;
 
 const queryTemp =
@@ -91,7 +90,7 @@ from(bucket: "` +
   |> filter(fn: (r) => r["_field"] == "value")
   |> last()`;
 
-  const queryPressureOut =
+const queryPressureOut =
   `
 from(bucket: "` +
   process.env.INFLUX_BUCKET +
@@ -100,7 +99,6 @@ from(bucket: "` +
   |> filter(fn: (r) => r["_measurement"] == "device_frmpayload_data_pressure")
   |> filter(fn: (r) => r["_field"] == "value")
   |> last()`;
-
 
 const queryHarpeStats = (harpeNumber) =>
   `
@@ -163,7 +161,7 @@ const influxConnect = async () => {
       console.log("\nCollect ROWS ERROR");
     });
 
-    await queryApi
+  await queryApi
     .collectRows(
       queryLastPoidruche /*, you can specify a row mapper as a second arg */
     )
@@ -245,7 +243,7 @@ const influxConnect = async () => {
       console.log("\nCollect ROWS ERROR");
     });
 
-    await queryApi
+  await queryApi
     .collectRows(
       queryPressureOut /*, you can specify a row mapper as a second arg */
     )
