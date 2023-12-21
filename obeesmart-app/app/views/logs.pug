@@ -53,14 +53,18 @@ append body
 					thead
 						tr
 							th Timestamp
-							th User ID
 							th User Login
 							th Action
+							th Details
 					tbody
 						each log in logs
 							tr
-								td= log.created_at
-								td= log.user_id
+								td= log.logdate.toLocaleString()
 								td= log.User ? log.User.login : 'Unknown User'
 								td= log.action
+								td
+									if typeof log.details === 'object'
+										| #{JSON.stringify(log.details, null, 2)}
+									else
+										| #{log.details}
 	include footer.pug

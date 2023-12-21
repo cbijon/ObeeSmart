@@ -1,7 +1,7 @@
 // log.js
 "use strict";
 const env = process.env.NODE_ENV || "development";
-const { DataTypes } = require("sequelize");
+const { Sequelize, DataTypes } = require("sequelize");
 const config = require(__dirname + "/../config/config.js")[env];
 
 module.exports = (sequelize) => {
@@ -21,7 +21,7 @@ module.exports = (sequelize) => {
         type: DataTypes.JSON, // Adjust the data type based on the details you want to log
         allowNull: true,
       },
-      createdAt: {
+      logdate: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
         allowNull: false,
