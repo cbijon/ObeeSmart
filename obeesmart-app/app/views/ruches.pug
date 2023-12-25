@@ -1,0 +1,54 @@
+extends ../node_modules/pug-bootstrap/_bootstrap
+
+append styles
+	link(rel="stylesheet", href='../css/bootstrap-datepicker3.min.css')
+	link(rel="stylesheet", href='https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css')
+	link(rel="stylesheet", href='../css/styles2.css')
+
+append scripts
+	script(src='https://code.jquery.com/jquery-1.11.3.min.js')
+	script(src='https://code.jquery.com/ui/1.11.3/jquery-ui.min.js')
+	script(src='../js/bootstrap-datepicker.min.js')
+	script(src='../locales/bootstrap-datepicker.fr.min.js')
+
+block content
+	.container
+		img(src="../images/bannierenoirenetwork.png", alt="Header Image", class="img-fluid")
+		include navbar.pug
+		.row
+			.col-md-6
+				h4 Gestion des Ruches
+				form(action="/ruches/create", method="post", class="well", onsubmit="return validateForm()")
+					label(for="name") Nom de la Ruche
+					input(type="text", name="name", placeholder='', required='', autofocus='', class="form-control")
+
+					label(for="baseWeight") Poids de la base de la Ruche (kg)
+					input(type="number", name="baseWeight", placeholder='', required='', class="form-control")
+
+					label(for="isTare") Est une Tare
+					input(type="checkbox", name="isTare", class="form-check-input")
+
+					label(for="Ruchier_id") Ruchier
+					select(name="Ruchier_id", class="form-control")
+						each r in ruchiers
+							option(value=r.id)= r.name
+
+					label(for="address") Adresse de la Ruche
+					input(type="text", name="address", id="address", placeholder='', required='', class="form-control")
+					small.text-muted Entrez l'adresse complète pour obtenir automatiquement les coordonnées GPS.
+
+					input(type="hidden", name="latitude", id="latitude", readonly='', class="form-control")
+					input(type="hidden", name="longitude", id="longitude", readonly='', class="form-control")
+
+					input(type="submit", value="Créer", class="btn btn-primary")
+
+			.col-md-6
+				h4 Ruches Existantes
+				ul.list-group
+					each ruche in ruches
+						li.list-group-item
+							| #{ruche.name}
+							span.badge.ml-2= `Hausses: ${ruche.hausses.length}`
+							span.badge.ml-2= `Poids Total: ${calculateTotalWeight(ruche)} kg`
+
+	include footer.pug

@@ -1,0 +1,51 @@
+extends ../node_modules/pug-bootstrap/_bootstrap
+
+append styles
+	link(rel="stylesheet", href='../css/bootstrap-datepicker3.min.css')
+	link(rel="stylesheet", href='https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css')
+	link(rel="stylesheet", href='../css/styles2.css')
+
+append scripts
+	script(src='https://code.jquery.com/jquery-1.11.3.min.js')
+	script(src='https://code.jquery.com/ui/1.11.3/jquery-ui.min.js')
+	script(src='../js/bootstrap-datepicker.min.js')
+	script(src='../locales/bootstrap-datepicker.fr.min.js')
+
+block content
+	.container
+		img(src="../images/bannierenoirenetwork.png", alt="Header Image", class="img-fluid")
+		include navbar.pug
+		.row
+			.col-md-6
+				h4 Gestion des Hausses
+				form(action="/hausses/create", method="post", class="well", onsubmit="return validateForm()")
+					label(for="name") Nom de la Hausse
+					input(type="text", name="name", placeholder='', required='', autofocus='', class="form-control")
+
+					label(for="weight") Poids de la Hausse (kg)
+					input(type="number", name="weight", placeholder='', required='', class="form-control")
+
+					label(for="isTare") Est une Tare
+					input(type="checkbox", name="isTare", class="form-check-input")
+
+					label(for="Ruche_id") Ruche
+					select(name="Ruche_id", class="form-control")
+						each ruche in ruches
+							option(value=ruche.id)= ruche.name
+
+					input(type="submit", value="Créer", class="btn btn-primary")
+
+			.col-md-6
+				h4 Hausses Existantes
+				ul.list-group
+					each hausse in hausses
+						li.list-group-item
+							| #{hausse.name}
+							span.badge.ml-2= `Poids: ${hausse.weight} kg`
+							span.badge.ml-2= `Tare: ${hausse.isTare ? 'Oui' : 'Non'}`
+
+	script.
+		function validateForm() {
+			// Ajoutez ici une validation personnalisée si nécessaire
+			return true;
+		}

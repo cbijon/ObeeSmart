@@ -4,92 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ObeeSmart</title>
-    <link rel="stylesheet" href="styles.css" />
-    <!-- Assurez-vous d'ajouter le fichier CSS correspondant -->
-    <style>
-      body {
-        font-family: "Arial", sans-serif;
-        background: black;
-        color: white;
-        margin: 0;
-        padding: 0;
-      }
-
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-image: url("images/bannierenoire.png"); /* Remplacez 'banner.jpg' par le chemin de votre image */
-        background-size: cover;
-        padding: 20px;
-        color: white;
-        max-width: 1024;
-        width: 1024px;
-        height: 114px;
-        max-height: 114px;
-        margin: 0 auto; /* Centrer horizontalement */
-      }
-
-      .french-flag {
-        width: 20px;
-        margin-right: 10px;
-      }
-
-      .counter-container {
-        margin-left: auto; /* Aligner à droite */
-      }
-
-      .counter {
-        text-align: center;
-        font-size: 18px;
-      }
-
-      .counter-number {
-        color: #ffd700; /* Couleur jaune miel pour les chiffres du compteur */
-      }
-
-      nav {
-        display: flex;
-        justify-content: space-around;
-        background: #000;
-        padding: 10px;
-        max-width: 1024px; /* Limiter la largeur à 1024 pixels */
-        margin: 0 auto; /* Centrer horizontalement */
-      }
-
-      nav a {
-        color: white;
-        text-decoration: none;
-        font-size: 18px;
-        transition:
-          color 0.3s,
-          text-shadow 0.3s; /* Transition de couleur et d'ombre de texte */
-      }
-
-      nav a:hover {
-        color: #ffd700; /* Couleur jaune miel */
-        text-shadow: 0 0 10px #ffd700; /* Effet de lueur jaune miel */
-      }
-
-      .summary {
-        text-align: center;
-        padding: 50px;
-      }
-
-      footer {
-        text-align: center;
-        padding: 10px;
-        background: #000;
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-      }
-    </style>
+    <link rel="stylesheet" href="css/static.css" /> 
   </head>
 
   <body>
     <header>
-      <meta name="author" content="Charles Bijon" />
       <div class="counter-container">
         <div class="counter">
           Frelons tués à ce jour :
@@ -105,37 +24,15 @@
       <a href="/login">Login</a>
     </nav>
 
-    <div class="summary">
-      
-      <p>
-      En construction, le test grandeur nature commence cette année !
-      </p>
-      
-    </div>
+    <main class="summary">
+      <p>En construction, le test grandeur nature commence cette année !</p>
+    </main>
 
     <footer>
       Copyright ObeeSmart@2023
-      <img src="images/french-flag.png" alt="French Flag" class="french-flag" />
+      <img src="images/french-flag.png" alt="French Flag" class="french-flag" loading="lazy" />
     </footer>
 
-    <script>
-      // Utilisation de fetch pour récupérer le JSON depuis l'URL
-      fetch("/data/totalfrelons")
-        .then((response) => response.json())
-        .then((data) => {
-          // Exemple de structure JSON : {"total":[{"FraggedHornet":252}]}
-          const fraggedHornetCount = data.total[0].FraggedHornet;
-
-          // Mise à jour du compteur
-          document.getElementById("hornetCounter").innerText =
-            fraggedHornetCount;
-        })
-        .catch((error) =>
-          console.error(
-            "Erreur lors de la récupération des données JSON:",
-            error
-          )
-        );
-    </script>
+    <script src="js/main.min.js"></script>
   </body>
 </html>

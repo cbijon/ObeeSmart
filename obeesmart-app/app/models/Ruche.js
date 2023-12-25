@@ -13,7 +13,16 @@ module.exports = sequelize => {
         defaultValue: DataTypes.UUIDV4,
       },
       name: DataTypes.STRING,
-      // Ajoutez d'autres attributs de la ruche selon vos besoins
+      baseWeight: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 0, // Poids de la base de la ruche vide par défaut
+      },
+      isTare: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false, // Par défaut, la hausse n'est pas une tare
+      },
     },
     {
       underscored: true,
@@ -23,7 +32,7 @@ module.exports = sequelize => {
   Ruche.associate = models => {
     Ruche.hasMany(models.Harpe, {foreignKey: 'Ruche_id'});
     Ruche.hasMany(models.Scale, {foreignKey: 'Ruche_id'});
-    
+    Ruche.hasMany(models.Hausse, { foreignKey: 'Ruche_id' });
     Ruche.belongsTo(models.User, {
       foreignKey: 'user_id',
       onDelete: 'CASCADE',

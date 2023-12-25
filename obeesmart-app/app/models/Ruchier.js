@@ -15,8 +15,8 @@ module.exports = sequelize => {
       name: DataTypes.STRING,
       longitude: DataTypes.FLOAT,
       latitude: DataTypes.FLOAT,
-      streetName: DataTypes.STRING,       // Nouveau champ pour le nom de la rue
-      postalCode: DataTypes.STRING,       // Nouveau champ pour le code postal
+      streetname: DataTypes.STRING,       // Nouveau champ pour le nom de la rue
+      postalcode: DataTypes.STRING,       // Nouveau champ pour le code postal
       city: DataTypes.STRING,              // Nouveau champ pour la ville
       country: DataTypes.STRING,           // Nouveau champ pour le pays
       // Ajoutez d'autres attributs du ruchier selon vos besoins

@@ -7,9 +7,9 @@ const router = express.Router();
 // Middleware de vérification de session
 const checkSession = (req, res, next) => {
   if (req.session.user && req.cookies.user_sid) {
-    next(); // If the session exists, continue
+    next(); // Si la session existe, continuez
   } else {
-    res.status(401).json({ message: "Unauthorized: Session not found" });
+    res.redirect('/login'); // Sinon, redirigez vers la page de connexion
   }
 };
 

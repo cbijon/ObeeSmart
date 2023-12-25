@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ObeeSmart</title>
     <link rel="stylesheet" href="css/static.css" />  
+    <style>
+      /* Ajoutez vos media queries ici */
+      @media (max-width: 600px) {
+        nav {
+          display: none; /* Cachez la navigation sur les petits écrans */
+        }
+        /* Autres styles pour les petits écrans */
+      }
+    </style>
   </head>
 
   <body>
@@ -64,24 +73,6 @@
       <img src="images/french-flag.png" alt="French Flag" class="french-flag" />
     </footer>
 
-    <script>
-      // Utilisation de fetch pour récupérer le JSON depuis l'URL
-      fetch("/data/totalfrelons")
-        .then((response) => response.json())
-        .then((data) => {
-          // Exemple de structure JSON : {"total":[{"FraggedHornet":252}]}
-          const fraggedHornetCount = data.total[0].FraggedHornet;
-
-          // Mise à jour du compteur
-          document.getElementById("hornetCounter").innerText =
-            fraggedHornetCount;
-        })
-        .catch((error) =>
-          console.error(
-            "Erreur lors de la récupération des données JSON:",
-            error
-          )
-        );
-    </script>
+    <script src="js/main.min.js"></script>
   </body>
 </html>

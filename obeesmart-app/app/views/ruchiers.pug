@@ -1,0 +1,72 @@
+extends ../node_modules/pug-bootstrap/_bootstrap
+
+append styles
+  link(rel="stylesheet", href='../css/bootstrap-datepicker3.min.css')
+  link(rel="stylesheet", href='https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css')
+  link(rel="stylesheet", href='../css/styles2.css')
+
+append scripts
+  script(src='https://code.jquery.com/jquery-1.11.3.min.js')
+  script(src='https://code.jquery.com/ui/1.11.3/jquery-ui.min.js')
+  script(src='../js/bootstrap-datepicker.min.js')
+  script(src='../locales/bootstrap-datepicker.fr.min.js')
+
+append body
+  .container
+    img(src="../images/bannierenoirenetwork.png", alt="Header Image", class="img-fluid")
+    include navbar.pug
+    .row
+      .col-md-4
+        h4 Création de Ruchier
+        form(action="/ruchiers/create", method="post", class="well")
+          label(for="name") Nom
+          input(type="text", name="name", placeholder='', required='', autofocus='', class="form-control")
+          
+          // Ajoutez une petite description pour aider l'utilisateur
+          small.text-muted Adresse physique du ruchier.
+          // Supprimez les champs de longitude et latitude manuels
+          label(for="address") Adresse
+          input(type="text",name="address", id="address", placeholder='', required='', class="form-control")
+          
+          // Ajoutez une petite description pour aider l'utilisateur
+          small.text-muted Entrez l'adresse complète pour obtenir automatiquement les coordonnées GPS.
+
+          input(type="submit", value="Créer", class="btn btn-primary")
+      .col-md-8
+        h4 Liste des Ruchiers
+        each ruchier in ruchiers
+          .card
+            .card-body
+              h5.card-title= ruchier.name
+              p.card-text
+                | Longitude: #{ruchier.longitude}
+                | Latitude: #{ruchier.latitude}
+                | Rue: #{ruchier.streetname}
+                | Code Postal: #{ruchier.postalcode}
+                | Ville: #{ruchier.city}
+                | Pays: #{ruchier.country}
+              a(href=`/ruchiers/${ruchier.id}`, class="btn btn-primary") Voir les détails
+
+    include footer.pug
+
+    script.
+      // Fonction pour obtenir les coordonnées à partir de l'adresse
+      function getCoordinates() {
+        var address = document.getElementById('address').value;
+
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${address}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.length > 0) {
+              // Mettez à jour les champs de coordonnées GPS
+              // Si vous avez plusieurs formulaires sur la page, assurez-vous de spécifier l'identifiant unique du formulaire
+              document.getElementById('longitude').value = data[0].lon;
+              document.getElementById('latitude').value = data[0].lat;
+            } else {
+              console.error('Adresse non trouvée');
+            }
+          })
+          .catch(error => {
+            console.error('Erreur lors de la récupération des coordonnées:', error);
+          });
+      }

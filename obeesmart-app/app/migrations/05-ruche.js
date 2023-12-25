@@ -11,6 +11,16 @@ module.exports = {
             defaultValue: DataTypes.UUIDV4,
           },
           name: DataTypes.STRING,
+          baseWeight: {
+            type: DataTypes.FLOAT,
+            allowNull: false,
+            defaultValue: 0, // Poids de la base de la ruche vide par défaut
+          },
+          isTare: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false, // Par défaut, la hausse n'est pas une tare
+          },
           created_at: DataTypes.DATE,
           updated_at: DataTypes.DATE,
         },

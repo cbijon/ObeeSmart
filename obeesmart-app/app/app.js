@@ -12,6 +12,8 @@ const token = require("./routes/token");
 const preferences = require("./routes/preferences");
 const password = require("./routes/password");
 const log = require("./routes/log");
+const ruchier = require("./routes/ruchier");
+const hausse = require("./routes/hausse");
 
 
 
@@ -102,17 +104,19 @@ app.use("/", routes);
 app.use("/groups", group);
 app.use("/users", user);
 app.use('/centraleHarpes', centraleHarpes);
-app.use('/harpe', harpe);
-app.use('/ruche', ruche);
-app.use('/scale', scale);
-app.use('/screen', screen);
+app.use('/harpes', harpe);
+app.use('/ruches', ruche);
+app.use('/scales', scale);
+app.use('/screens', screen);
 app.use('/tokens', token);
 app.use('/preferences', preferences);
 app.use('/password', password);
 app.use('/logs', log);
+app.use('/ruchiers', ruchier);
+app.use('/hausses', hausse);
 
 
-// routing
+// routing api
 app.use("/api/groups", apiGroup);
 app.use("/api/users", apiUser);
 app.use('/api/centraleHarpes', apiCentraleHarpes);

@@ -42,13 +42,13 @@ const sessionChecker = (req, res, next) => {
 };
 
 app.get("/data/totalfrelons", async (req, res) => {
-/*  if (req.session && req.cookies && req.cookies.user_sid) {*/
-    const data = await queryTotalFrags();
-    res.writeHead(200, {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    });
-    res.end(JSON.stringify(data));
+  /*  if (req.session && req.cookies && req.cookies.user_sid) {*/
+  const data = await queryTotalFrags();
+  res.writeHead(200, {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  });
+  res.end(JSON.stringify(data));
   //} else {
   //  console.log("no sess or cook");
   //  console.log("Session Info:", req.session);
@@ -72,17 +72,17 @@ app.get("/", sessionChecker, (req, res) => {
 });
 
 app.get("/dashboard", (req, res) => {
-  //if (req.session && req.cookies && req.cookies.user_sid) {
-  console.log("User Info:", req.session.user);
-  res.render("index", {
-    title: "Dashboard",
-    is_admin: req.session.user.is_admin,
-  });
-  /*} else {
+  if (req.session && req.cookies && req.cookies.user_sid) {
+    console.log("User Info:", req.session.user);
+    res.render("index", {
+      title: "Dashboard",
+      is_admin: req.session.user.is_admin,
+    });
+  } else {
     console.log("no sess or cook");
     console.log("Session Info:", req.session);
     res.redirect("/login");
-  }*/
+  }
 });
 
 // route for user Login
